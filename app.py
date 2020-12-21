@@ -111,10 +111,11 @@ def webhook_handler():
 
 @app.route("/show-fsm", methods=["GET"])
 def show_fsm():
-#    machine.get_graph().draw("fsm.png", prog="dot", format="png")
+    machine.get_graph().draw("fsm.png", prog="dot", format="png")
     return send_file("fsm.png", mimetype="image/png")
 
 
 if __name__ == "__main__":
-    port = os.environ.get("PORT", 8000)
+    #port = os.environ.get("PORT", 8000)
+    port = os.environ.['PORT']
     app.run(host="0.0.0.0", port=port, debug=True)
