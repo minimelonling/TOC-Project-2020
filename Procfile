@@ -1,1 +1,1 @@
-web: heroku run python app.py runserver
+web:python app.py
