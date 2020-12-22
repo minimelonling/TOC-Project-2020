@@ -51,11 +51,11 @@ if channel_access_token is None:
 line_bot_api = LineBotApi(channel_access_token)
 parser = WebhookParser(channel_secret)
 
-@app.route("/", methods=["POST"])
+@app.route('/', methods=['POST'])
 def home():
     return "hi, my first chatbot!"
 
-@app.route("/callback", methods=["POST"])
+@app.route('/callback', methods=['POST'])
 def callback():
     signature = request.headers["X-Line-Signature"]
     # get request body as text
@@ -82,7 +82,7 @@ def callback():
     return "OK"
 
 
-@app.route("/webhook", methods=["POST"])
+@app.route('/webhook', methods=['POST'])
 def webhook_handler():
     signature = request.headers["X-Line-Signature"]
     # get request body as text
@@ -112,7 +112,7 @@ def webhook_handler():
     return "OK"
 
 
-@app.route("/show-fsm", methods=["GET"])
+@app.route('/show-fsm', methods=['GET'])
 def show_fsm():
     machine.get_graph().draw("fsm.png", prog="dot", format="png")
     return send_file("fsm.png", mimetype="image/png")
