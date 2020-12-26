@@ -1,59 +1,134 @@
 from transitions.extensions import GraphMachine
 
-class TocMachine(GraphMachine):
-    def __init__(self, **machine_configs):
-        self.machine = GraphMachine(model=self, **machine_configs)
-
-    def is_going_to_state1(self, event):
-        text = event.message.text
-        return text.lower() == "go to state1"
-
-    def is_going_to_state2(self, event):
-        text = event.message.text
-        return text.lower() == "go to state2"
-
-    def on_enter_state1(self, event):
-        print("I'm entering state1")
-
-#        reply_token = event.reply_token
-#        send_text_message(reply_token, "Trigger state1")
-        self.go_back()
-
-    def on_exit_state1(self):
-        print("Leaving state1")
-
-    def on_enter_state2(self, event):
-        print("I'm entering state2")
-
-#        reply_token = event.reply_token
-#        send_text_message(reply_token, "Trigger state2")
-        self.go_back()
-
-    def on_exit_state2(self):
-        print("Leaving state2")
 
 machine = TocMachine(
-    states=["user", "state1", "state2"],
+    states=["init",
+            "add", "astart", "aend", "aact", "atag", 
+            "show", "schedule", "statisic", 
+            "change",
+            "cact", "act1", "act2", 
+            "ctime", "tstart", "tend", "tact", 
+            "ctag", "gact", "gtag"],
     transitions=[
         {
             "trigger": "advance",
-            "source": "user",
-            "dest": "state1",
-            "conditions": "is_going_to_state1",
+            "source": "init",
+            "dest": "add",
+            "conditions": "is_going_to_add",
         },
         {
             "trigger": "advance",
-            "source": "user",
-            "dest": "state2",
-            "conditions": "is_going_to_state2",
+            "source": "add",
+            "dest": "astart",
+            "conditions": "is_going_to_astart",
         },
-        {"trigger": "go_back", "source": ["state1", "state2"], "dest": "user"},
+        {
+            "trigger": "advance",
+            "source": "astart",
+            "dest": "aend",
+            "conditions": "is_going_to_aend",
+        },
+        {
+            "trigger": "advance",
+            "source": "aend",
+            "dest": "aact",
+            "conditions": "is_going_to_aact",
+        },
+        {
+            "trigger": "advance",
+            "source": "init",
+            "dest": "show",
+            "conditions": "is_going_to_show",
+        },
+        {
+            "trigger": "advance",
+            "source": "show",
+            "dest": "schedule",
+            "conditions": "is_going_to_schedule",
+        },
+        {
+            "trigger": "advance",
+            "source": "show",
+            "dest": "statistic",
+            "conditions": "is_going_to_statistic",
+        },
+        {
+            "trigger": "advance",
+            "source": "init",
+            "dest": "change",
+            "conditions": "is_going_to_change",
+        },
+        {
+            "trigger": "advance",
+            "source": "change",
+            "dest": "cact",
+            "conditions": "is_going_to_cact",
+        },
+        {
+            "trigger": "advance",
+            "source": "cact",
+            "dest": "act1",
+            "conditions": "is_going_to_act1",
+        },
+        {
+            "trigger": "advance",
+            "source": "act1",
+            "dest": "act2",
+            "conditions": "is_going_to_act2",
+        },
+        {
+            "trigger": "advance",
+            "source": "change",
+            "dest": "ctime",
+            "conditions": "is_going_to_ctime",
+        },
+        {
+            "trigger": "advance",
+            "source": "ctime",
+            "dest": "tact",
+            "conditions": "is_going_to_tact",
+        },
+        {
+            "trigger": "advance",
+            "source": "tact",
+            "dest": "tstart",
+            "conditions": "is_going_to_tstart",
+        },
+        {
+            "trigger": "advance",
+            "source": "tstart",
+            "dest": "tend",
+            "conditions": "is_going_to_tend",
+        },
+        {
+            "trigger": "advance",
+            "source": "change",
+            "dest": "ctag",
+            "conditions": "is_going_to_ctag",
+        },
+        {
+            "trigger": "advance",
+            "source": "ctag",
+            "dest": "gact",
+            "conditions": "is_going_to_gact",
+        },
+        {
+            "trigger": "advance",
+            "source": "gact",
+            "dest": "gtag",
+            "conditions": "is_going_to_gtag",
+        },
+        {
+            "trigger": "advance",
+            "source": ["atag", "schedule", "statisic", "act2", "tend", "gtag"],
+            "dest": "init",
+            "conditions": "is_going_to_init",
+        }
     ],
-    initial="user",
+    initial="init",
     auto_transitions=False,
     show_conditions=True,
 )
-
 class event:
     def __init__(self):
         self.message = msg()

@@ -1,7 +1,6 @@
 from transitions.extensions import GraphMachine
 from utils import send_text_message
-from time_management import activity, add_act, change_act, change_time, 
-                            change_tag, show_schedule, cal_time, start_odr
+from time_management import activity, add_act, change_act, change_time, change_tag, show_schedule, cal_time, start_odr, tags
 
 
 start = ""
@@ -11,66 +10,99 @@ tag = ""
 chg = ""
 tmps = []
 tmpe = []
+back = 0
 
 class TocMachine(GraphMachine):
     def __init__(self, **machine_configs):
         self.machine = GraphMachine(model=self, **machine_configs)
 
     def is_going_to_add(self, event):
+        global back
         text = event.message.text
-        return text.lower() == "add"
+        if back == 0:
+            return text.lower() == "add"
+        else:
+            return text.lower() == "continue"
 
     def is_going_to_astart(self, event):
+        global start
+        global tmps
+        global back
+        back = 1
         start = event.message.text
         tmps = start.split(":")
-        if tmps[0] >= 0 and tmps[0] < 25 and tmps[1] >= 0 and tmps[1] < 61:
+        if len(tmps) != 2:
+            return False
+        if int(tmps[0]) >= 0 and int(tmps[0]) < 25 and int(tmps[1]) >= 0 and int(tmps[1]) < 61:
             return True
-        else
+        else:
             return False
 
     def is_going_to_aend(self, event):
+        global end
+        global tmps
+        global tmpe
         end = event.message.text
         tmpe = end.split(":")
-        if tmpe[0] >= 0 and tmpe[0] < 25 and tmpe[1] >= 0 and tmpe[1] < 61:
-            if tmps[0] < tmpe[1] or (tmps[0] == tmpe[0] and tmps[1] < tmpe[1]):
+        if len(tmpe) != 2:
+            return False
+        if int(tmpe[0]) >= 0 and int(tmpe[0]) < 25 and int(tmpe[1]) >= 0 and int(tmpe[1]) < 61:
+            if int(tmps[0]) < int(tmpe[0]) or (int(tmps[0]) == int(tmpe[0]) and int(tmps[1]) < int(tmpe[1])):
                 return True
         return False
 
     def is_going_to_aact(self, event):
+        global act
         act = event.message.text
         return True
 
     def is_going_to_atag(self, event):
+        global tag
         tag = event.message.text
         return True
 
     def is_going_to_show(self, event):
+        global back
         text = event.message.text
         if len(start_odr) != 0:
-            return text.lower() == "show"
+            if back == 0:
+                return text.lower() == "show"
+            else:
+                return text.lower() == "continue"
         else:
             return False
 
     def is_going_to_schedule(self, event):
+        global back
+        back = 1
         text = event.message.text
         return text.lower() == "schedule"
 
     def is_going_to_statistic(self, event):
+        global back
+        back = 1
         text = event.message.text
-        return False
+        return text.lower() == "statistic"
 
     def is_going_to_change(self, event):
+        global back
         text = event.message.text
         if len(start_odr) != 0:
-            return text.lower() == "change"
+            if back == 0:
+                return text.lower() == "change"
+            else:
+                return text.lower() == "continue"
         else:
             return False
 
     def is_going_to_cact(self, event):
+        global back
+        back = 1
         text = event.message.text
         return text.lower() == "act"
 
     def is_going_to_act1(self, event):
+        global act
         act = event.message.text
         for k in start_odr:
             if k.act == act:
@@ -78,52 +110,70 @@ class TocMachine(GraphMachine):
         return False
 
     def is_going_to_act2(self, event):
+        global chg
         chg = event.message.text
         return True
 
     def is_going_to_ctime(self, event):
+        global back
+        back = 1
         text = event.message.text
         return text.lower() == "time"
 
     def is_going_to_tact(self, event):
-        text = event.message.text
+        global act
+        act = event.message.text
         for k in start_odr:
-            if k.act == text:
+            if k.act == act:
                 return True
         return False
 
     def is_going_to_tstart(self, event):
+        global start
+        global tmps
         start = event.message.text
         tmps = start.split(":")
-        if tmps[0] >= 0 and tmps[0] < 25 and tmps[1] >= 0 and tmps[1] < 61:
+        if len(tmps) != 2:
+            return False
+        if int(tmps[0]) >= 0 and int(tmps[0]) < 25 and int(tmps[1]) >= 0 and int(tmps[1]) < 61:
             return True
-        else
+        else:
             return False
 
     def is_going_to_tend(self, event):
+        global end
+        global tmpe
         end = event.message.text
         tmpe = end.split(":")
-        if tmpe[0] >= 0 and tmpe[0] < 25 and tmpe[1] >= 0 and tmpe[1] < 61:
-            if tmps[0] < tmpe[1] or (tmps[0] == tmpe[0] and tmps[1] < tmpe[1]):
+        if len(tmpe) != 2:
+            return False
+        if int(tmpe[0]) >= 0 and int(tmpe[0]) < 25 and int(tmpe[1]) >= 0 and int(tmpe[1]) < 61:
+            if int(tmps[0]) < int(tmpe[0]) or (int(tmps[0]) == int(tmpe[0]) and int(tmps[1]) < int(tmpe[1])):
                 return True
         return False
 
     def is_going_to_ctag(self, event):
+        global back
+        back = 1
         text = event.message.text
         return text.lower() == "tag"
 
     def is_going_to_gact(self, event):
-        text = event.message.text
+        global act
+        act = event.message.text
         for k in start_odr:
-            if k.act == text
+            if k.act == act:
                 return True
         return False
 
     def is_going_to_gtag(self, event):
+        global tag
         tag = event.message.text
         return True
 
     def is_going_to_init(self, event):
+        global back
+        back = 0
         text = event.message.text
         return text.lower() == "back"
 
@@ -131,8 +181,8 @@ class TocMachine(GraphMachine):
         s = "Welcome~~\n\n\n"
         s += "Please enter one of the following options:\n\n"
         s += "1. add (add new activity)\n"
-        s += "2. show (show the )\n"
-        s += "3. change\n"
+        s += "2. show (show the infos in detail)\n"
+        s += "3. change (change the data)\n"
         reply_token = event.reply_token
         send_text_message(reply_token, s)
 
@@ -254,43 +304,8 @@ class TocMachine(GraphMachine):
         send_text_message(reply_token, s)
 
     def on_enter_gtag(self, event):
-        change_tag(act, tag)
-        s = "activity " + act + " is already updated it's tag"
+        s = change_tag(act, tag)
         s += "\n\nPlease enter \"back\" to return to the main part, or if you want to keep changing other data, just enter \"continue\""
         reply_token = event.reply_token
         send_text_message(reply_token, s)
 
-
-"""
-class TocMachine(GraphMachine):
-    def __init__(self, **machine_configs):
-        self.machine = GraphMachine(model=self, **machine_configs)
-
-    def is_going_to_state1(self, event):
-        text = event.message.text
-        return text.lower() == "go to state1"
-
-    def is_going_to_state2(self, event):
-        text = event.message.text
-        return text.lower() == "go to state2"
-
-    def on_enter_state1(self, event):
-        print("I'm entering state1")
-
-        reply_token = event.reply_token
-        send_text_message(reply_token, "Trigger state1")
-        self.go_back()
-
-    def on_exit_state1(self):
-        print("Leaving state1")
-
-    def on_enter_state2(self, event):
-        print("I'm entering state2")
-
-        reply_token = event.reply_token
-        send_text_message(reply_token, "Trigger state2")
-        self.go_back()
-
-    def on_exit_state2(self):
-        print("Leaving state2")
-"""

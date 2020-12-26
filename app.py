@@ -16,7 +16,7 @@ load_dotenv()
 machine = TocMachine(
     states=["init",
             "add", "astart", "aend", "aact", "atag", 
-            "show", "schedule", "statisic", 
+            "show", "schedule", "statistic", 
             "change",
             "cact", "act1", "act2", 
             "ctime", "tstart", "tend", "tact", 
@@ -24,7 +24,7 @@ machine = TocMachine(
     transitions=[
         {
             "trigger": "advance",
-            "source": "init",
+            "source": ["init", "atag"],
             "dest": "add",
             "conditions": "is_going_to_add",
         },
@@ -48,7 +48,13 @@ machine = TocMachine(
         },
         {
             "trigger": "advance",
-            "source": "init",
+            "source": "aact",
+            "dest": "atag",
+            "conditions": "is_going_to_atag",
+        },
+        {
+            "trigger": "advance",
+            "source": ["init", "schedule", "statistic"],
             "dest": "show",
             "conditions": "is_going_to_show",
         },
@@ -66,7 +72,7 @@ machine = TocMachine(
         },
         {
             "trigger": "advance",
-            "source": "init",
+            "source": ["init", "act2", "tend", "gtag"],
             "dest": "change",
             "conditions": "is_going_to_change",
         },
@@ -132,7 +138,7 @@ machine = TocMachine(
         },
         {
             "trigger": "advance",
-            "source": ["atag", "schedule", "statisic", "act2", "tend", "gtag"],
+            "source": ["atag", "schedule", "statistic", "act2", "tend", "gtag"],
             "dest": "init",
             "conditions": "is_going_to_init",
         }
@@ -244,7 +250,8 @@ def webhook_handler():
 @app.route('/show-fsm', methods=['POST'])
 def show_fsm():
     machine.get_graph().draw("fsm.png", prog="dot", format="png")
-    return send_file("fsm.png", mimetype="image/png")
+    return "OK"
+    #return send_file("fsm.png", mimetype="image/png")
 
 if __name__ == "__main__":
     #port = os.environ.get("PORT", 8000)

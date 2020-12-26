@@ -86,9 +86,19 @@ def change_time(start, end, act):
     return "invalid activity " + act
 
 def change_tag(act, tag):
+    global tags
     for k in start_odr:
         if is_equal(act, k.act):
             tmp = k.tag
+            c = 0
+            flag = False
+            for t in tags:
+                if t == tmp:
+                    tags[c] = tag
+                    break
+                c += 1
+            if c == len(tags):
+                tags.append(tag)
             k.tag = tag
             return tmp + " in " + k.act + " is already changed to " + k.tag
     return "no activity's tag change"
@@ -105,7 +115,16 @@ def show_schedule():
 def cal_time():
     s = ""
     time = [0, 0]
+    c = 0
     for t in tags:
+        f = False
+        for i in range(0, c):
+            if tags[i] == t:
+                f = True
+                break
+        if f:
+            continue
+        c += 1
         s += (t + ": ")
         for k in start_odr:
             if k.tag == t:
