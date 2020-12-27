@@ -90,6 +90,7 @@ def change_tag(act, tag):
     for k in start_odr:
         if is_equal(act, k.act):
             tmp = k.tag
+            """
             c = 0
             flag = False
             for t in tags:
@@ -98,7 +99,8 @@ def change_tag(act, tag):
                     break
                 c += 1
             if c == len(tags):
-                tags.append(tag)
+            """
+            tags.append(tag)
             k.tag = tag
             return tmp + " in " + k.act + " is already changed to " + k.tag
     return "no activity's tag change"

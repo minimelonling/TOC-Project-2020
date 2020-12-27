@@ -1,159 +1,72 @@
-# TOC Project 2020
+# Time Management
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/dc7fa47fcd809b99d087/maintainability)](https://codeclimate.com/github/NCKU-CCS/TOC-Project-2020/maintainability)
+## 前言
 
-[![Known Vulnerabilities](https://snyk.io/test/github/NCKU-CCS/TOC-Project-2020/badge.svg)](https://snyk.io/test/github/NCKU-CCS/TOC-Project-2020)
+現代人因為休閒娛樂增多，對於自身的時間掌控度比較沒有概念。此次設計出來的APP就是希望能讓使用者慢慢的意識到時間規劃的重要性，檢視一日所做的事，以及花費的時間量。
 
+## 構想
 
-Template Code for TOC Project 2020
+此APP有三個主要的功能，分別如下:
 
-A Line bot based on a finite state machine
+    -add: 增加行程
+    -show: 顯示一日的行程規劃
+        -schedule: 列出行程表
+        -statistic: 顯示一日所花的時間比例
+    -change: 改變輸入資訊
+        -act: 行程資訊
+        -time: 單一行程時間
+        -tag: 行程標籤
 
-More details in the [Slides](https://hackmd.io/@TTW/ToC-2019-Project#) and [FAQ](https://hackmd.io/s/B1Xw7E8kN)
+## 環境
 
-## Setup
+    作業系統: Ubuntu 18.04.4 LTS
+    python 版本: Python 3.6.9
 
-### Prerequisite
-* Python 3.6
-* Pipenv
-* Facebook Page and App
-* HTTPS Server
-
-#### Install Dependency
-```sh
-pip3 install pipenv
-
-pipenv --three
-
-pipenv install
-
-pipenv shell
-```
-
-* pygraphviz (For visualizing Finite State Machine)
-    * [Setup pygraphviz on Ubuntu](http://www.jianshu.com/p/a3da7ecc5303)
-	* [Note: macOS Install error](https://github.com/pygraphviz/pygraphviz/issues/100)
+## 使用說明
 
 
-#### Secret Data
-You should generate a `.env` file to set Environment Variables refer to our `.env.sample`.
-`LINE_CHANNEL_SECRET` and `LINE_CHANNEL_ACCESS_TOKEN` **MUST** be set to proper values.
-Otherwise, you might not be able to run your code.
+最初始的狀態在main menu
+當使用者輸入add，linebot就會要求使用者輸入起始與結束時間。
+![](https://i.imgur.com/sj95dmI.jpg)
 
-#### Run Locally
-You can either setup https server or using `ngrok` as a proxy.
+接著使用者要輸入想加入的行程，並且用標籤記錄行程性質，最後會顯示輸入成功的訊息。
+![](https://i.imgur.com/oTK6jdy.jpg)
+在輸入tag時，linebot會顯示目前已經存在的標籤們。
+![](https://i.imgur.com/bxgQv0S.jpg)
+回到主目錄。
+![](https://i.imgur.com/RPQihvz.jpg)
+輸入show，進到下一個選單。
+![](https://i.imgur.com/8bP03bg.jpg)
+輸入schedule，顯示行程時間表。
+![](https://i.imgur.com/lyDEtkm.jpg)
+輸入statistic，顯示每個tag之下的的行程總共花費時間的紀錄。
+![](https://i.imgur.com/7TGNxPU.jpg)
+回到主目錄，選擇change，接著進入下一個選單。
+![](https://i.imgur.com/9VF24DI.jpg)
+輸入act，代表想要更換行程名稱，接著linebot會顯示目前所有的行程。
+![](https://i.imgur.com/wqHHhMF.jpg)
+接著使用者輸入新的行程名稱，linebot會顯示已更新成功的訊息。
+![](https://i.imgur.com/Dub96lg.jpg)
+輸入continue回到次目錄，輸入time後，linebot一樣會顯示出所有的行程。
+![](https://i.imgur.com/fjGOuGj.jpg)
+選擇要被更新時間的行程。
+![](https://i.imgur.com/9nWjRzh.jpg)
+輸入新的起始時間與結束時間後，linebot一樣會顯示更新成功的訊息。
+![](https://i.imgur.com/SfkQcx5.jpg)
+如下圖，進入schedule可以看到sleep成功被更新。
+![](https://i.imgur.com/l67W36K.jpg)
+進入statistic也可以發現sleep相對應的tag，daily增加時間長度。
+![](https://i.imgur.com/xH5boYj.jpg)
+回到次目錄，選擇tag，linebot顯示所有的行程。
+![](https://i.imgur.com/De5Lny8.jpg)
+輸入欲更換標籤的行程，接著輸入新的標籤名稱。
+![](https://i.imgur.com/oR85gAj.jpg)
+可以看到舊標籤的時間替換到新的標籤。
+![](https://i.imgur.com/T2qZAdq.jpg)
 
-#### a. Ngrok installation
-* [ macOS, Windows, Linux](https://ngrok.com/download)
 
-or you can use Homebrew (MAC)
-```sh
-brew cask install ngrok
-```
+## FSM
 
-**`ngrok` would be used in the following instruction**
-
-```sh
-ngrok http 8000
-```
-
-After that, `ngrok` would generate a https URL.
-
-#### Run the sever
-
-```sh
-python3 app.py
-```
-
-#### b. Servo
-
-Or You can use [servo](http://serveo.net/) to expose local servers to the internet.
+![](https://i.imgur.com/8vvytNV.png)
 
 
-## Finite State Machine
-![fsm](./img/show-fsm.png)
-
-## Usage
-The initial state is set to `user`.
-
-Every time `user` state is triggered to `advance` to another state, it will `go_back` to `user` state after the bot replies corresponding message.
-
-* user
-	* Input: "go to state1"
-		* Reply: "I'm entering state1"
-
-	* Input: "go to state2"
-		* Reply: "I'm entering state2"
-
-## Deploy
-Setting to deploy webhooks on Heroku.
-
-### Heroku CLI installation
-
-* [macOS, Windows](https://devcenter.heroku.com/articles/heroku-cli)
-
-or you can use Homebrew (MAC)
-```sh
-brew tap heroku/brew && brew install heroku
-```
-
-or you can use Snap (Ubuntu 16+)
-```sh
-sudo snap install --classic heroku
-```
-
-### Connect to Heroku
-
-1. Register Heroku: https://signup.heroku.com
-
-2. Create Heroku project from website
-
-3. CLI Login
-
-	`heroku login`
-
-### Upload project to Heroku
-
-1. Add local project to Heroku project
-
-	heroku git:remote -a {HEROKU_APP_NAME}
-
-2. Upload project
-
-	```
-	git add .
-	git commit -m "Add code"
-	git push -f heroku master
-	```
-
-3. Set Environment - Line Messaging API Secret Keys
-
-	```
-	heroku config:set LINE_CHANNEL_SECRET=your_line_channel_secret
-	heroku config:set LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token
-	```
-
-4. Your Project is now running on Heroku!
-
-	url: `{HEROKU_APP_NAME}.herokuapp.com/callback`
-
-	debug command: `heroku logs --tail --app {HEROKU_APP_NAME}`
-
-5. If fail with `pygraphviz` install errors
-
-	run commands below can solve the problems
-	```
-	heroku buildpacks:set heroku/python
-	heroku buildpacks:add --index 1 heroku-community/apt
-	```
-
-	refference: https://hackmd.io/@ccw/B1Xw7E8kN?type=view#Q2-如何在-Heroku-使用-pygraphviz
-
-## Reference
-[Pipenv](https://medium.com/@chihsuan/pipenv-更簡單-更快速的-python-套件管理工具-135a47e504f4) ❤️ [@chihsuan](https://github.com/chihsuan)
-
-[TOC-Project-2019](https://github.com/winonecheng/TOC-Project-2019) ❤️ [@winonecheng](https://github.com/winonecheng)
-
-Flask Architecture ❤️ [@Sirius207](https://github.com/Sirius207)
-
-[Line line-bot-sdk-python](https://github.com/line/line-bot-sdk-python/tree/master/examples/flask-echo)
