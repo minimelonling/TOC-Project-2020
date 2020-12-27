@@ -172,12 +172,12 @@ class TocMachine(GraphMachine):
         return True
 
     def is_going_to_init(self, event):
-        global back
-        back = 0
         text = event.message.text
         return text.lower() == "back"
 
     def on_enter_init(self, event):
+        global back
+        back = 0
         s = "Welcome~~\n\n\n"
         s += "Please enter one of the following options:\n\n"
         s += "1. add (add new activity)\n"
@@ -206,9 +206,14 @@ class TocMachine(GraphMachine):
     def on_enter_aact(self, event):
         s = ""
         s += "***current tags:\n"
+        c = 0
         for t in tags:
+            for i in range(0, c):
+                if t == tags[c]:
+                    continue
+            c += 1
             s += (t + "\n")
-        s = "\n\nEnter tag name:"
+        s += "\n\nEnter tag name:"
         reply_token = event.reply_token
         send_text_message(reply_token, s)
 
@@ -227,13 +232,13 @@ class TocMachine(GraphMachine):
 
     def on_enter_schedule(self, event):
         s = show_schedule()
-        s += "\n\nPlease enter \"back\" to the main part"
+        s += "\n\nPlease enter \"back\" to the main part, or enter\"continue\" to keep look for another infos"
         reply_token = event.reply_token
         send_text_message(reply_token, s)
 
     def on_enter_statistic(self, event):
         s = cal_time()
-        s += "\n\nPlease enter \"back\" to the main part"
+        s += "\n\nPlease enter \"back\" to the main part, or enter\"continue\" to keep look for another infos"
         reply_token = event.reply_token
         send_text_message(reply_token, s)
 

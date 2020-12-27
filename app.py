@@ -147,32 +147,10 @@ machine = TocMachine(
     auto_transitions=False,
     show_conditions=True,
 )
-"""
-machine = TocMachine(
-    states=["user", "state1", "state2"],
-    transitions=[
-        {
-            "trigger": "advance",
-            "source": "user",
-            "dest": "state1",
-            "conditions": "is_going_to_state1",
-        },
-        {
-            "trigger": "advance",
-            "source": "user",
-            "dest": "state2",
-            "conditions": "is_going_to_state2",
-        },
-        {"trigger": "go_back", "source": ["state1", "state2"], "dest": "user"},
-    ],
-    initial="user",
-    auto_transitions=False,
-    show_conditions=True,
-)
-"""
 
 app = Flask(__name__, static_url_path="")
 
+machine.get_graph().draw("fsm.png", prog="dot", format="png")
 
 # get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv("LINE_CHANNEL_SECRET", None)
@@ -241,8 +219,43 @@ def webhook_handler():
         print(f"\nFSM STATE: {machine.state}")
         print(f"REQUEST BODY: \n{body}")
         response = machine.advance(event)
+        s = ""
+
         if response == False:
-            send_text_message(event.reply_token, "Not Entering any State")
+            if machine.state == "init":
+                s = "Please enter \"add\", \"show\" or \"change\"!"
+            elif machine.state == "add":
+                s = "Please enter valid start time!"
+            elif machine.state == "astart":
+                s = "Please enter valid end time!"
+            elif machine.state == "atag":
+                s = "Please enter \"back\" or \"continue\"!"
+            elif machine.state == "show":
+                s = "Please choose \"schedule\" or \"statistic\" to enter!"
+            elif machine.state == "schedule":
+                s = "Please enter \"back\" or \"continue\"!"
+            elif machine.state == "statistic":
+                s = "Please enter \"back\" or \"continue\"!"
+            elif machine.state == "change":
+                s = "Please enter \"act\", \"time\" or \"tag\"!"
+            elif machine.state == "cact":
+                s = "Please enter valid activity name!"
+            elif machine.state == "act2":
+                s = "Please enter \"back\" or \"continue\"!"
+            elif machine.state == "ctime":
+                s = "Please enter valid activity name!"
+            elif machine.state == "tact":
+                s = "Please enter valid start time!"
+            elif machine.state == "tstart":
+                s = "Please enter valid end time!"
+            elif machine.state == "tend":
+                s = "Please enter \"back\" or \"continue\"!"
+            elif machine.state == "ctag":
+                s = "Please enter valid activity name!"
+            elif machine.state == "gtag":
+                s = "Please enter \"back\" or \"continue\"!"
+
+            send_text_message(event.reply_token, s)
 
     return "OK"
 
@@ -250,8 +263,8 @@ def webhook_handler():
 @app.route('/show-fsm', methods=['POST'])
 def show_fsm():
     machine.get_graph().draw("fsm.png", prog="dot", format="png")
-    return "OK"
-    #return send_file("fsm.png", mimetype="image/png")
+    #return "OK"
+    return send_file("fsm.png", mimetype="image/png")
 
 if __name__ == "__main__":
     #port = os.environ.get("PORT", 8000)
